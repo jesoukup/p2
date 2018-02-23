@@ -2,20 +2,28 @@
 // you may implement AVL, Red-Black, 2-3 Tree, or 2-3-4 Tree
 // be sure to include in class header which tree you have implemented
 public class BalancedSearchTree<T extends Comparable<T>> implements SearchTreeADT<T> {
+    private static final boolean red = true;
+    private static final boolean black = false;
 
 	// inner node class used to store key items and links to other nodes
 	protected class Treenode<K extends Comparable<K>> {
-		public Treenode(K item) {
-			this(item,null,null);
+		public Treenode(K item, boolean color) {
+			this(item,color,null,null);
 		}
-		public Treenode(K item, Treenode<K> left, Treenode<K> right) {
+		public Treenode(K item, boolean color, Treenode<K> left, Treenode<K> right) {
 			key = item;
+			this.color = color;
 			this.left = left;
 			this.right = right;
 		}
 		K key;
 		Treenode<K> left;
 		Treenode<K> right;
+		boolean color;
+		
+		private void insertHelper(Treenode<T> node) {
+		        
+		}
 	}
 
 	protected Treenode<T> root;
@@ -43,6 +51,15 @@ public class BalancedSearchTree<T extends Comparable<T>> implements SearchTreeAD
 	public void insert(T item) {
 		//TODO if item is null throw IllegalArgumentException, 
 		// otherwise insert into balanced search tree
+	    if (item == null) {
+	        throw new IllegalArgumentException();
+	    }
+	    if (root == null) {
+            root = new Treenode<T>(item, black);
+        }
+	    else {
+	        root.insertHelper(new Treenode<T>(item, red));
+	    }
 	}
 
 	public void delete(T item) {
