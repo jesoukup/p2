@@ -6,23 +6,103 @@ public class BalancedSearchTree<T extends Comparable<T>> implements SearchTreeAD
     private static final boolean black = false;
 
 	// inner node class used to store key items and links to other nodes
-	protected class Treenode<K extends Comparable<K>> {
-		public Treenode(K item, boolean color) {
+	protected class Treenode<T extends Comparable<T>> {
+		public Treenode(T item, boolean color) {
 			this(item,color,null,null);
 		}
-		public Treenode(K item, boolean color, Treenode<K> left, Treenode<K> right) {
+		public Treenode(T item, boolean color, Treenode<T> left, Treenode<T> right) {
 			key = item;
 			this.color = color;
 			this.left = left;
 			this.right = right;
 		}
-		K key;
-		Treenode<K> left;
-		Treenode<K> right;
+		T key;
+		Treenode<T> left;
+		Treenode<T> right;
 		boolean color;
 		
 		private void insertHelper(Treenode<T> node) {
-		        
+		    if (node.key.compareTo(this.key) < 0) {
+	            if (this.left == null) {
+	               this.left = node;
+	            }
+	            else {
+	                this.left.insertHelper(node);
+	            }
+	        }
+	        else if (node.key.compareTo(this.key) > 0) {
+	            if (this.right == null) {
+	                this.right = node;
+	            }
+	            else {
+	                this.right.insertHelper(node);
+	            }
+	        }
+	        if (node.key.equals(this.key)) {
+	            throw new DuplicateKeyException("This key already exists.");
+	        }
+		}
+		
+		private boolean lookupHelper(T item) {
+		    boolean temp = false; 
+	        if (item.equals(this.key)) {
+	            temp = true;
+	        } 
+	        if (item.compareTo(this.key) < 0) {
+	            if (this.left == null) {
+	               temp = false;
+	            }
+	            else {
+	                temp = this.left.lookupHelper(item);
+	            }
+	        }
+	        else if (item.compareTo(this.key) > 0) {
+	            if (this.right == null) {
+	                temp = false;
+	            }
+	            else {
+	                temp = this.right.lookupHelper(item);
+	            }
+	        }
+	        return temp;
+		}
+		
+		private String inAscendingOrderHelper() {
+		    String keys = "";
+		    keys = keys + root.key;
+		    if (this.left == null && this.right != null) {
+		        keys = keys + this.right.key;
+		        this.right.inAscendingOrderHelper();
+		    }
+		    if (this.left != null && this.right == null) {
+                keys = keys + this.left.key;
+                this.left.inAscendingOrderHelper();
+            }
+		    if (this.left != null && this.right != null) {
+                keys = keys + this.right.key;
+                keys = keys + this.left.key;
+                this.left.inAscendingOrderHelper();
+                this.right.inAscendingOrderHelper();
+            }
+		    return keys;
+		}
+		
+		private int heightHelper() {
+		    int count = 0;
+		    if (this.left == null && this.right != null) {
+                count += 1;
+                this.right.heightHelper();
+            }
+            if (this.left != null && this.right == null) {
+                count += 1;
+                this.left.heightHelper();
+            }
+            if (this.left != null && this.right != null) {
+                count += 2;
+                this.left.heightHelper();
+                this.right.heightHelper();
+            }
+            return count;
 		}
 	}
 
@@ -30,22 +110,32 @@ public class BalancedSearchTree<T extends Comparable<T>> implements SearchTreeAD
 
 	public String inAscendingOrder() {
 		//TODO : must return comma separated list of keys in ascending order
-		return "" ;
+		if (root == null) {
+		    return "";
+		}
+		return root.inAscendingOrderHelper();
+		
 	}
 
 	public boolean isEmpty() {
 		//TODO return empty if there are no keys in structure
+		if (root == null) {
+		    return true;
+		}
 		return false;
 	}
 
 	public int height() {
 		//TODO return the height of this tree
-		return 0; 
+		if (root == null) {
+		    return 0;
+		}
+		return root.heightHelper();
 	}
 
 	public boolean lookup(T item) {
 		//TODO must return true if item is in tree, otherwise false
-		return false;
+		return root.lookupHelper(item);
 	}
 
 	public void insert(T item) {
